@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convex Hull Visualizer</title>
+</head>
+<body>
+
+  <header>
+    <h1>Convex Hull</h1>
+  </header>
+
+  <div class="main-layout">
+    <div class="canvas-area">
+      <canvas id="main"></canvas>
+    </div>
+    <aside class="side-panel">
+    </aside>
+  </div>
+
+<script>
+  const canvas = document.getElementById('main');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width  = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+</script>
+
+</body>
+</html>
