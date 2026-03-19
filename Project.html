@@ -3,7 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Convex Hull Visualizer</title>
+  <title>Convex Hull — Graham & Andrew</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0f;
+      color: #e8e8f0;
+      font-family: monospace;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 14px 24px;
+      background: #13131a;
+      border-bottom: 1px solid #2a2a3a;
+      flex-shrink: 0;
+    }
+
+    header h1 { font-size: 1.25rem; font-weight: 800; }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .canvas-area {
+      position: relative;
+      background: #0a0a0f;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .side-panel {
+      background: #13131a;
+      border-right: 1px solid #2a2a3a;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+  </style>
 </head>
 <body>
 
@@ -11,21 +61,22 @@
     <h1>Convex Hull</h1>
   </header>
 
-  <div class="main-layout">
-    <div class="canvas-area">
-      <canvas id="main"></canvas>
-    </div>
+  <div class="main-content">
     <aside class="side-panel">
     </aside>
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
   </div>
 
 <script>
-  const canvas = document.getElementById('main');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById('canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H;
 
   function resizeCanvas() {
-    canvas.width  = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
+    W = canvas.width  = canvas.parentElement.clientWidth;
+    H = canvas.height = canvas.parentElement.clientHeight;
   }
 
   window.addEventListener('resize', resizeCanvas);
