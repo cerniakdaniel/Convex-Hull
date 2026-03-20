@@ -156,6 +156,33 @@
 
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H;
+
+  function resizeCanvas() {
+    W = canvas.width  = canvas.parentElement.clientWidth;
+    H = canvas.height = canvas.parentElement.clientHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  let points      = [];
+  let steps       = [];
+  let currentStep = -1;
+  let isPlaying   = false;
+  let playTimer   = null;
+  let algoReady   = false;
+
+  function cross(O, A, B) {
+    return (A.x - O.x) * (B.y - O.y) - (A.y - O.y) * (B.x - O.x);
+  }
+
+  function distSquared(A, B) {
+    return (A.x - B.x) ** 2 + (A.y - B.y) ** 2;
+  }
+
+  resizeCanvas();
 </script>
 
 </body>
