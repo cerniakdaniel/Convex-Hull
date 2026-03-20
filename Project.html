@@ -4,13 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Convex Hull — Graham & Andrew</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --bg:     #0a0a0f;
+      --panel:  #13131a;
+      --border: #2a2a3a;
+      --green:  #00f5a0;
+      --blue:   #00c8ff;
+      --orange: #ff6b35;
+      --yellow: #ffcc00;
+      --purple: #a78bfa;
+      --text:   #e8e8f0;
+      --muted:  #6b6b8a;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #0a0a0f;
-      color: #e8e8f0;
-      font-family: monospace;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
       height: 100vh;
       overflow: hidden;
       display: flex;
@@ -18,13 +32,34 @@
     }
 
     header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
       padding: 14px 24px;
-      background: #13131a;
-      border-bottom: 1px solid #2a2a3a;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
 
-    header h1 { font-size: 1.25rem; font-weight: 800; }
+    header h1 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800; }
+    header h1 span { color: var(--green); }
+
+    .logo-placeholder {
+      width: 36px; height: 36px;
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: var(--muted); flex-shrink: 0;
+    }
+
+    .header-algo-label {
+      font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid var(--border); padding: 4px 10px;
+      border-radius: 3px; margin-left: auto;
+    }
+
+    .header-step-counter { font-size: 0.72rem; color: var(--blue); }
 
     .main-content {
       display: grid;
@@ -35,39 +70,57 @@
 
     .canvas-area {
       position: relative;
-      background: #0a0a0f;
+      background: var(--bg);
       overflow: hidden;
     }
 
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      cursor: crosshair;
+    .canvas-area::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+
+    .canvas-hint {
+      position: absolute; bottom: 16px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.68rem; color: var(--muted);
+      pointer-events: none; letter-spacing: 1px; transition: opacity .4s;
     }
 
     .side-panel {
-      background: #13131a;
-      border-right: 1px solid #2a2a3a;
-      display: flex;
-      flex-direction: column;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
       overflow-y: auto;
     }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Convex Hull</h1>
-  </header>
+<header>
+  <div class="logo-placeholder">LOGO</div>
+  <h1>Convex <span>Hull</span></h1>
+  <span class="header-algo-label">Graham / Andrew Scan</span>
+  <span class="header-step-counter" id="header-counter">— / —</span>
+</header>
 
-  <div class="main-content">
-    <aside class="side-panel">
-    </aside>
-    <div class="canvas-area">
-      <canvas id="canvas"></canvas>
-    </div>
+<div class="main-content">
+  <aside class="side-panel"></aside>
+  <div class="canvas-area">
+    <canvas id="canvas"></canvas>
+    <div class="canvas-hint" id="canvas-hint">Kliknij aby dodać punkt · Lub użyj przycisku "Losowe punkty"</div>
   </div>
+</div>
 
 <script>
   const canvas = document.getElementById('canvas');
