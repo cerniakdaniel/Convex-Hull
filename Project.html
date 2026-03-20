@@ -6,100 +6,56 @@
   <title>Convex Hull — Graham & Andrew</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg:     #0a0a0f;
-      --panel:  #13131a;
-      --border: #2a2a3a;
-      --green:  #00f5a0;
-      --blue:   #00c8ff;
-      --orange: #ff6b35;
-      --yellow: #ffcc00;
-      --purple: #a78bfa;
-      --text:   #e8e8f0;
-      --muted:  #6b6b8a;
-    }
-
+    :root { --bg:#0a0a0f; --panel:#13131a; --border:#2a2a3a; --green:#00f5a0; --blue:#00c8ff; --orange:#ff6b35; --yellow:#ffcc00; --purple:#a78bfa; --text:#e8e8f0; --muted:#6b6b8a; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Space Mono', monospace;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 14px 24px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
+    body { background: var(--bg); color: var(--text); font-family: 'Space Mono', monospace; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    header { display: flex; align-items: center; gap: 16px; padding: 14px 24px; background: var(--panel); border-bottom: 1px solid var(--border); flex-shrink: 0; }
     header h1 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800; }
     header h1 span { color: var(--green); }
-
-    .logo-placeholder {
-      width: 36px; height: 36px;
-      border: 2px dashed var(--border);
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 9px; color: var(--muted); flex-shrink: 0;
-    }
-
-    .header-algo-label {
-      font-size: 0.65rem; color: var(--muted);
-      letter-spacing: 2px; text-transform: uppercase;
-      border: 1px solid var(--border); padding: 4px 10px;
-      border-radius: 3px; margin-left: auto;
-    }
-
+    .logo-placeholder { width: 36px; height: 36px; border: 2px dashed var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--muted); flex-shrink: 0; }
+    .header-algo-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; border: 1px solid var(--border); padding: 4px 10px; border-radius: 3px; margin-left: auto; }
     .header-step-counter { font-size: 0.72rem; color: var(--blue); }
-
-    .main-content {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .canvas-area {
-      position: relative;
-      background: var(--bg);
-      overflow: hidden;
-    }
-
-    .canvas-area::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-      background-size: 50px 50px;
-      pointer-events: none;
-    }
-
+    .main-content { display: grid; grid-template-columns: 280px 1fr; flex: 1; overflow: hidden; }
+    .canvas-area { position: relative; background: var(--bg); overflow: hidden; }
+    .canvas-area::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; }
     canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
-
-    .canvas-hint {
-      position: absolute; bottom: 16px; left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.68rem; color: var(--muted);
-      pointer-events: none; letter-spacing: 1px; transition: opacity .4s;
-    }
-
-    .side-panel {
-      background: var(--panel);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      overflow-y: auto;
-    }
-
+    .canvas-hint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 0.68rem; color: var(--muted); pointer-events: none; letter-spacing: 1px; transition: opacity .4s; }
+    .side-panel { background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+    .section { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+    .section-title { font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .btn-group { display: flex; flex-direction: column; gap: 7px; }
+    .btn { width: 100%; padding: 9px 13px; border: 1px solid var(--border); background: transparent; color: var(--text); font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; text-align: left; border-radius: 4px; transition: background .15s, color .15s; display: flex; align-items: center; gap: 8px; }
+    .btn:hover { background: var(--border); color: #fff; }
+    .btn.primary { border-color: var(--green); color: var(--green); }
+    .btn.primary:hover { background: var(--green); color: #000; }
+    .btn.danger { border-color: var(--orange); color: var(--orange); }
+    .btn.danger:hover { background: var(--orange); color: #fff; }
+    .btn.active { background: var(--green); color: #000; border-color: var(--green); }
+    .btn:disabled { opacity: .35; cursor: not-allowed; }
+    .btn-row { display: flex; gap: 7px; }
+    .btn-row .btn { flex: 1; }
+    select { width: 100%; padding: 8px 11px; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'Space Mono', monospace; font-size: 0.75rem; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
+    select:focus { outline: none; border-color: var(--green); }
+    .slider-wrap { margin-top: 10px; }
+    .slider-label { display: flex; justify-content: space-between; font-size: .7rem; color: var(--muted); margin-bottom: 5px; }
+    .slider-label span:last-child { color: var(--blue); }
+    input[type=range] { width: 100%; accent-color: var(--green); cursor: pointer; }
+    .progress-bar { height: 2px; background: var(--border); margin-top: 12px; border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--green); width: 0%; transition: width .2s; }
+    .legend { display: flex; flex-direction: column; gap: 7px; }
+    .legend-item { display: flex; align-items: center; gap: 10px; font-size: .7rem; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-line { width: 22px; height: 2px; flex-shrink: 0; }
+    .stats { display: flex; flex-direction: column; gap: 6px; }
+    .stat-row { display: flex; justify-content: space-between; font-size: .7rem; }
+    .stat-row .label { color: var(--muted); }
+    .stat-row .value { color: var(--blue); font-weight: 700; }
+    .log-wrap { flex: 1; padding: 14px 20px; overflow-y: auto; min-height: 100px; }
+    .log-title { font-size: .62rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    #log-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    #log-list li { font-size: .66rem; color: var(--muted); border-left: 2px solid var(--border); padding-left: 8px; line-height: 1.5; }
+    #log-list li.done   { color: var(--green); border-left-color: var(--green); }
+    #log-list li.active { color: var(--text);  border-left-color: var(--blue); }
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -115,11 +71,77 @@
 </header>
 
 <div class="main-content">
-  <aside class="side-panel"></aside>
+
+  <aside class="side-panel">
+    <div class="section">
+      <div class="section-title">Algorytm</div>
+      <select id="algo-select">
+        <option value="graham">Graham Scan</option>
+        <option value="andrew">Andrew's Monotone Chain</option>
+      </select>
+      <div class="btn-group">
+        <button class="btn primary" id="btn-run">▶ &nbsp;Uruchom algorytm</button>
+        <div class="btn-row">
+          <button class="btn" id="btn-prev" disabled>← Wstecz</button>
+          <button class="btn" id="btn-next" disabled>Dalej →</button>
+        </div>
+        <button class="btn" id="btn-play" disabled>⏵ &nbsp;Auto-Play</button>
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-label">
+          <span>Prędkość animacji</span>
+          <span id="speed-display">500ms</span>
+        </div>
+        <input type="range" id="speed-slider" min="50" max="1500" value="500" step="50" />
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Punkty wejściowe</div>
+      <div class="btn-group">
+        <button class="btn" id="btn-random">◈ &nbsp;Losowe punkty (20)</button>
+        <button class="btn" id="btn-clusters">◉ &nbsp;Punkty w skupiskach (40)</button>
+        <button class="btn danger" id="btn-clear">✕ &nbsp;Wyczyść wszystko</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Statystyki</div>
+      <div class="stats">
+        <div class="stat-row"><span class="label">Punktów wejściowych</span><span class="value" id="stat-points">0</span></div>
+        <div class="stat-row"><span class="label">Wierzchołki otoczki</span><span class="value" id="stat-hull">—</span></div>
+        <div class="stat-row"><span class="label">Aktualny krok</span><span class="value" id="stat-step">—</span></div>
+        <div class="stat-row"><span class="label">Cross product</span><span class="value" id="stat-cross">—</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Legenda</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#fff"></div><span>Punkt wejściowy</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffcc00"></div><span>Pivot (punkt bazowy)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00f5a0"></div><span>Wierzchołek otoczki</span></div>
+        <div class="legend-item"><div class="legend-line" style="background:#ff6b35"></div><span>Aktywna krawędź</span></div>
+        <div class="legend-item"><div class="legend-line" style="background:#00f5a0"></div><span>Gotowa otoczka</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00c8ff;border-radius:2px"></div><span>Testowany kandydat</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div><span>Element na stosie</span></div>
+      </div>
+    </div>
+
+    <div class="log-wrap">
+      <div class="log-title">Dziennik kroków</div>
+      <ul id="log-list"></ul>
+    </div>
+  </aside>
+
   <div class="canvas-area">
     <canvas id="canvas"></canvas>
     <div class="canvas-hint" id="canvas-hint">Kliknij aby dodać punkt · Lub użyj przycisku "Losowe punkty"</div>
   </div>
+
 </div>
 
 <script>
