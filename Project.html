@@ -229,6 +229,75 @@
     return result;
   }
 
+  function andrewChain(pts) {
+    const result = [];
+    if (pts.length < 3) return result;
+
+    const sorted = [...pts].sort((a, b) => a.x !== b.x ? a.x - b.x : a.y - b.y);
+
+    result.push({ type: 'sorted', sorted,
+      message: `Posortowano ${sorted.length} punktów leksykograficznie (po X, przy równym X po Y)` });
+
+    result.push({ type: 'phase', sorted,
+      message: '── Faza 1: budowanie dolnej otoczki (od lewej do prawej) ──' });
+
+    let lower = [];
+
+    for (let i = 0; i < sorted.length; i++) {
+      const p = sorted[i];
+
+      while (lower.length >= 2) {
+        const c = cross(lower[lower.length - 2], lower[lower.length - 1], p);
+
+        result.push({ type: 'check', lower: [...lower], upper: [], candidate: p,
+          crossValue: c, pointA: lower[lower.length - 2], pointB: lower[lower.length - 1],
+          phase: 'lower',
+          message: `[dolna] Cross = ${Math.round(c)} → ${c <= 0 ? 'skręt CW — usuwam' : 'skręt CCW — zostawiam'}` });
+
+        if (c <= 0) lower.pop();
+        else break;
+      }
+
+      lower.push(p);
+      result.push({ type: 'push', lower: [...lower], upper: [], candidate: p, phase: 'lower',
+        message: `[dolna] Dodano (${Math.round(p.x)}, ${Math.round(p.y)}) — ${lower.length} elementów` });
+    }
+
+    result.push({ type: 'phase', lower: [...lower], upper: [],
+      message: '── Faza 2: budowanie górnej otoczki (od prawej do lewej) ──' });
+
+    let upper = [];
+
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      const p = sorted[i];
+
+      while (upper.length >= 2) {
+        const c = cross(upper[upper.length - 2], upper[upper.length - 1], p);
+
+        result.push({ type: 'check', lower: [...lower], upper: [...upper], candidate: p,
+          crossValue: c, pointA: upper[upper.length - 2], pointB: upper[upper.length - 1],
+          phase: 'upper',
+          message: `[górna] Cross = ${Math.round(c)} → ${c <= 0 ? 'skręt CW — usuwam' : 'skręt CCW — zostawiam'}` });
+
+        if (c <= 0) upper.pop();
+        else break;
+      }
+
+      upper.push(p);
+      result.push({ type: 'push', lower: [...lower], upper: [...upper], candidate: p, phase: 'upper',
+        message: `[górna] Dodano (${Math.round(p.x)}, ${Math.round(p.y)}) — ${upper.length} elementów` });
+    }
+
+    lower.pop();
+    upper.pop();
+    const hull = [...lower, ...upper];
+
+    result.push({ type: 'done', hull, lower: [...lower], upper: [...upper],
+      message: `✓ Gotowe! Dolna (${lower.length}) + Górna (${upper.length}) = Otoczka (${hull.length} wierzchołków)` });
+
+    return result;
+  }
+
   resizeCanvas();
 </script>
 
