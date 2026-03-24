@@ -297,6 +297,78 @@
 
     return result;
   }
+// --- po andrewChain ---
+
+  const COLOR = {
+    point:     '#ffffff',
+    pivot:     '#ffcc00',
+    hull:      '#00f5a0',
+    edge:      '#ff6b35',
+    candidate: '#00c8ff',
+    stack:     '#a78bfa',
+  };
+
+  function drawPoints(list, color = '#fff', radius = 4) {
+    list.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    });
+  }
+
+  function drawPolyline(list, color, width = 2, close = false) {
+    if (list.length < 2) return;
+    ctx.beginPath();
+    ctx.moveTo(list[0].x, list[0].y);
+    for (let i = 1; i < list.length; i++) ctx.lineTo(list[i].x, list[i].y);
+    if (close) ctx.closePath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = width;
+    ctx.stroke();
+  }
+
+  function drawHullFill(hull) {
+    if (hull.length < 3) return;
+    ctx.beginPath();
+    ctx.moveTo(hull[0].x, hull[0].y);
+    hull.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,245,160,0.07)';
+    ctx.fill();
+  }
+
+  function drawArrow(A, B, color = COLOR.edge) {
+    const dx = B.x - A.x;
+    const dy = B.y - A.y;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 1) return;
+    const ux = dx / len;
+    const uy = dy / len;
+    const head = 12;
+
+    ctx.beginPath();
+    ctx.moveTo(A.x, A.y);
+    ctx.lineTo(B.x, B.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 2;
+    ctx.setLineDash([]);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(B.x, B.y);
+    ctx.lineTo(B.x - head * (ux - uy * 0.4), B.y - head * (uy + ux * 0.4));
+    ctx.lineTo(B.x - head * (ux + uy * 0.4), B.y - head * (uy - ux * 0.4));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  function drawLabel(p, text, color = '#fff', dx = 8, dy = -8) {
+    ctx.font      = '11px Space Mono, monospace';
+    ctx.fillStyle = color;
+    ctx.fillText(text, p.x + dx, p.y + dy);
+  }
 
   resizeCanvas();
 </script>
