@@ -369,6 +369,122 @@
     ctx.fillStyle = color;
     ctx.fillText(text, p.x + dx, p.y + dy);
   }
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawPoints(points, COLOR.point, 4);
+    if (currentStep < 0 || steps.length === 0) return;
+    const step = steps[currentStep];
+    const algo = document.getElementById('algo-select').value;
+    if (algo === 'graham') renderGrahamStep(step);
+    else                   renderAndrewStep(step);
+  }
+
+  function renderGrahamStep(step) {
+    if (step.pivot) {
+      ctx.beginPath();
+      ctx.arc(step.pivot.x, step.pivot.y, 9, 0, Math.PI * 2);
+      ctx.strokeStyle = COLOR.pivot;
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(step.pivot.x, step.pivot.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = COLOR.pivot;
+      ctx.fill();
+      drawLabel(step.pivot, 'PIVOT', COLOR.pivot, 12, -10);
+    }
+
+    if (step.type === 'done') {
+      drawHullFill(step.hull);
+      drawPolyline(step.hull, COLOR.hull, 2.5, true);
+      step.hull.forEach((p, i) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = COLOR.hull;
+        ctx.fill();
+        drawLabel(p, i.toString(), COLOR.hull, 8, -8);
+      });
+      return;
+    }
+
+    if (step.stack && step.stack.length >= 2) {
+      ctx.setLineDash([5, 4]);
+      drawPolyline(step.stack, COLOR.stack, 1.5);
+      ctx.setLineDash([]);
+      drawPoints(step.stack, COLOR.stack, 5);
+    }
+
+    if (step.type === 'check' && step.pointA && step.pointB) {
+      drawArrow(step.pointA, step.pointB, COLOR.edge);
+      if (step.candidate) drawArrow(step.pointB, step.candidate, COLOR.candidate);
+    }
+
+    if (step.candidate) {
+      ctx.beginPath();
+      ctx.arc(step.candidate.x, step.candidate.y, 7, 0, Math.PI * 2);
+      ctx.strokeStyle = COLOR.candidate;
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+      drawLabel(step.candidate, '?', COLOR.candidate, 10, -8);
+    }
+
+    if (step.type === 'sorted' && step.sorted) {
+      ctx.setLineDash([3, 6]);
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth   = 1;
+      step.sorted.forEach(p => {
+        ctx.beginPath();
+        ctx.moveTo(step.pivot.x, step.pivot.y);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+    }
+  }
+
+  function renderAndrewStep(step) {
+    const lower = step.lower || [];
+    const upper = step.upper || [];
+
+    if (step.type === 'done') {
+      drawHullFill(step.hull);
+      drawPolyline(step.hull, COLOR.hull, 2.5, true);
+      step.hull.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = COLOR.hull;
+        ctx.fill();
+      });
+      return;
+    }
+
+    if (lower.length >= 2) {
+      ctx.setLineDash([]);
+      drawPolyline(lower, COLOR.edge, 2);
+      drawPoints(lower, COLOR.edge, 5);
+    }
+
+    if (upper.length >= 2) {
+      ctx.setLineDash([5, 4]);
+      drawPolyline(upper, COLOR.hull, 2);
+      ctx.setLineDash([]);
+      drawPoints(upper, COLOR.hull, 5);
+    }
+
+    if (step.type === 'check' && step.pointA && step.pointB) {
+      const edgeColor = step.phase === 'lower' ? COLOR.edge : COLOR.hull;
+      drawArrow(step.pointA, step.pointB, edgeColor);
+      if (step.candidate) drawArrow(step.pointB, step.candidate, COLOR.candidate);
+    }
+
+    if (step.candidate) {
+      ctx.beginPath();
+      ctx.arc(step.candidate.x, step.candidate.y, 7, 0, Math.PI * 2);
+      ctx.strokeStyle = COLOR.candidate;
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+      drawLabel(step.candidate, '?', COLOR.candidate, 10, -8);
+    }
+  }
 
   resizeCanvas();
 </script>
