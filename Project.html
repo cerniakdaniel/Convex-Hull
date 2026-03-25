@@ -485,6 +485,59 @@ function draw() {
       drawLabel(step.candidate, '?', COLOR.candidate, 10, -8);
     }
   }
+function buildLog() {
+    const list = document.getElementById('log-list');
+    list.innerHTML = '';
+    steps.forEach((s, i) => {
+      const li = document.createElement('li');
+      li.textContent = `[${i + 1}] ${s.message}`;
+      list.appendChild(li);
+    });
+  }
+
+  function updateLog() {
+    document.querySelectorAll('#log-list li').forEach((li, i) => {
+      if      (i < currentStep)   li.className = 'done';
+      else if (i === currentStep) li.className = 'active';
+      else                        li.className = '';
+    });
+    const active = document.querySelector('#log-list li.active');
+    if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  function updateStats() {
+    document.getElementById('stat-points').textContent = points.length;
+    const step = steps[currentStep];
+
+    if (!step) {
+      ['stat-hull', 'stat-step', 'stat-cross'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+      document.getElementById('header-counter').textContent = '— / —';
+      document.getElementById('progress').style.width = '0%';
+      return;
+    }
+
+    const label = `${currentStep + 1} / ${steps.length}`;
+    document.getElementById('stat-step').textContent      = label;
+    document.getElementById('header-counter').textContent = label;
+    document.getElementById('progress').style.width =
+      ((currentStep + 1) / steps.length * 100).toFixed(0) + '%';
+
+    if (step.type === 'done') {
+      document.getElementById('stat-hull').textContent = step.hull.length;
+    }
+
+    const crossEl = document.getElementById('stat-cross');
+    if (step.crossValue !== undefined) {
+      const v = Math.round(step.crossValue);
+      crossEl.textContent = `${v} (${v <= 0 ? 'CW' : 'CCW'})`;
+      crossEl.style.color = v <= 0 ? 'var(--orange)' : 'var(--green)';
+    } else {
+      crossEl.textContent = '—';
+      crossEl.style.color = 'var(--blue)';
+    }
+  }
 
   resizeCanvas();
 </script>
